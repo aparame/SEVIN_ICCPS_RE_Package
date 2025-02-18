@@ -24,7 +24,7 @@ This repository contains the repeatability package for the codebase of the confe
   ```
   conda activate alpha-beta-crown
   ```
-- Move back to home dir:
+- Return to home dir:
   ```
   cd ..
   ```
