@@ -4,6 +4,7 @@ channels:
   - pytorch
   - nvidia
   - defaults
+  - conda-forge
 dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
@@ -154,4 +155,5 @@ dependencies:
       - onnxsim==0.4.36
       - protobuf==3.20.2
       - skl2onnx==1.17.0
-prefix: /home/adi2440/anaconda3/envs/alpha-beta-crown
+      - torchsummary==1.5.1
+      - matplotlib==3.8.0  

@@ -2,6 +2,8 @@ import os
 import subprocess
 import yaml
 import glob
+import torch
+import re
 
 # Custom YAML representer for lists to enforce flow style
 def represent_list_flow_style(dumper, data):
@@ -10,7 +12,9 @@ def represent_list_flow_style(dumper, data):
 yaml.add_representer(list, represent_list_flow_style)
 
 # Define constants
-ABCROWN_CMD = "python ../alpha-beta-CROWN/complete_verifier/abcrown.py --config"
+
+ABCROWN_CMD = "python /opt/alpha-beta-CROWN/complete_verifier/abcrown.py --config" if torch.cuda.is_available() \
+    else "python /opt/alpha-beta-CROWN/complete_verifier/abcrown.py --device cpu --config"
 RESULTS_FILE = "results/results_vanilla_formal_verification.txt"
 CONFIG_FOLDER = "configs_vanilla"
 
@@ -62,8 +66,17 @@ for vnnlib_path in VNNLIB_PATHS:
             }
 
             # Create yaml file
-            base_name = f"{os.path.basename(vnnlib_file).split('.')[0]}_{os.path.basename(onnx_path).split('.')[0]}"
-            config_path = os.path.join(CONFIG_FOLDER, f"{base_name}.yaml")
+            config_filename = f"{os.path.basename(vnnlib_file).split('.')[0]}_{os.path.basename(onnx_path).split('.')[0]}"
+            # Define patterns to remove
+            patterns_to_remove = [r'_GMVAE', r'_formal', r'_encodings_8']
+
+            # Remove specified patterns
+            for pattern in patterns_to_remove:
+                config_filename = re.sub(pattern, '', config_filename)
+
+            # Remove repeated character sequences (e.g., '__' -> '_')
+            config_filename = re.sub(r'(_)\1+', r'\1', config_filename)
+            config_path = os.path.join(CONFIG_FOLDER, f"{config_filename}.yaml")
             
             if not os.path.exists(config_path):
                 with open(config_path, "w") as f:
@@ -76,7 +89,10 @@ for config_file in os.listdir(CONFIG_FOLDER):
         config_path = os.path.join(CONFIG_FOLDER, config_file)
         cmd = f"{ABCROWN_CMD} {config_path}"
         try:
-            output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, timeout=10).decode("utf-8")
+            if torch.cuda.is_available():
+            	output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, timeout=10).decode("utf-8")
+            else:
+            	output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, timeout=40).decode("utf-8")
             last_two_lines = output.splitlines()[-2:]
         except subprocess.TimeoutExpired:
             last_two_lines = ["Result: unsat"]

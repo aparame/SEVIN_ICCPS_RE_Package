@@ -14,7 +14,6 @@ from PIL import Image
 import numpy as np
 from tqdm import tqdm
 from sklearn.manifold import TSNE
-import cv2 
 import torchvision.utils as vutils
 import random
 
@@ -223,6 +222,13 @@ def loss_function(recon_x, x, mu, log_var, weights, beta=1e-2):
     total_loss = recon_loss + beta * (kld_loss - entropy)
     return total_loss, recon_loss, kld_loss
 
+import os
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap, BoundaryNorm
+from sklearn.manifold import TSNE
+
 def plot_latent_space(model, dataloader, output_dir, latent_dim):
     """Visualize latent space using t-SNE dimensionality reduction"""
     print("\nGenerating latent space visualization...")
@@ -251,31 +257,45 @@ def plot_latent_space(model, dataloader, output_dir, latent_dim):
 
     # Visualization setup
     colors = ['red', 'green', 'blue', 'yellow', 'cyan', 
-             'purple', 'orange', 'lime', 'brown', 'black', 'magenta']
+              'purple', 'orange', 'lime', 'brown', 'black', 'magenta']
     boundaries = np.arange(-0.40, 0.40, 0.1)
     cmap = ListedColormap(colors)
     norm = BoundaryNorm(boundaries, cmap.N, extend='both')
 
-    # Create plot
+    # --- Plot with labels ---
     plt.figure(figsize=(3.5, 2.5))
     scatter = plt.scatter(latent_tsne[:, 0], latent_tsne[:, 1], 
-                        c=all_labels, cmap=cmap, norm=norm, 
-                        s=10, alpha=0.9, linewidths=0.01)
-    
-    # Add colorbar and labels
+                          c=all_labels, cmap=cmap, norm=norm, 
+                          s=10, alpha=0.9, linewidths=0.01)
     cbar = plt.colorbar(scatter, boundaries=boundaries, 
-                       ticks=np.arange(-0.40, 0.40, 0.1))
+                        ticks=np.arange(-0.40, 0.40, 0.1))
     cbar.set_label('Steering Labels')
     plt.title('t-SNE Visualization of Latent Space', fontsize=12, pad=12)
     plt.xlabel('t-SNE Component 1', fontsize=10)
     plt.ylabel('t-SNE Component 2', fontsize=10)
     plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
-    
-    # Save and display
-    plot_path = os.path.join(output_dir, f'TSNE_{latent_dim}_formal.png')
-    plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+
+    plot_path_with_labels = os.path.join(output_dir, f'TSNE_{latent_dim}_with_labels.png')
+    plt.savefig(plot_path_with_labels, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Saved t-SNE plot to: {plot_path}")
+    print(f"Saved t-SNE plot with labels to: {plot_path_with_labels}")
+
+    # --- Plot without labels ---
+    plt.figure(figsize=(3.5, 2.5))
+    plt.scatter(latent_tsne[:, 0], latent_tsne[:, 1], 
+                color = 'black', norm=norm, 
+                s=10, alpha=0.9, linewidths=0.01)
+    plt.title('t-SNE Visualization of Latent Space (Labeless)', fontsize=12, pad=12)
+    plt.xlabel('t-SNE Component 1', fontsize=10)
+    plt.ylabel('t-SNE Component 2', fontsize=10)
+    plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+
+
+    plot_path_no_labels = os.path.join(output_dir, f'TSNE_{latent_dim}_no_labels.png')
+    plt.savefig(plot_path_no_labels, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"Saved t-SNE plot without labels to: {plot_path_no_labels}")
+
 
 def export_onnx(model, sample_input, save_path):
     """Export model to ONNX format"""
