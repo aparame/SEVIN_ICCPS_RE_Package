@@ -1,9 +1,25 @@
- [![DOI](https://zenodo.org/badge/679296696.svg)](https://doi.org/10.5281/zenodo.14806735)
-# Scalable and Explainable Verification of Image-based Neural Network Controllers
+[![DOI](https://zenodo.org/badge/679296696.svg)](https://doi.org/10.5281/zenodo.14806735)
 
-This repository contains the repeatability package for the codebase of the conference paper titled **"Scalable and Explainable Verification of Image-based Neural Network Controllers"** that is part of the proceedings for the **Internation Conference on Cyber-Physical Systems 2025**. The package includes scripts and configurations to reproduce the results presented in the paper, as well as tools for training and verifying neural network controllers.
+# Scalable and Explainable Verification of Image-based Neural Network Controllers (SEVIN)
+
+This repository contains the repeatability package for the codebase of the conference paper **"Scalable and Interpretable Verification of Image-based Neural Network Controllers for Autonomous Vehicles"**, published in the proceedings of the **International Conference on Cyber-Physical Systems (ICCPS) 2025**. 
+
+This package includes the necessary scripts and configurations to reproduce the verification results presented in the paper, alongside the source tools for training and verifying image-based neural network controllers via a Variational Autoencoder (VAE) latent space.
 
 ---
+
+## 📌 Citation
+
+If you use this codebase or find our work helpful in your research, please cite our ICCPS paper:
+
+```bibtex
+@inproceedings{parameshwaran2025sevin,
+  title={Scalable and Interpretable Verification of Image-based Neural Network Controllers for Autonomous Vehicles},
+  author={Parameshwaran, Aditya and Wang, Yue},
+  booktitle={Proceedings of the 16th ACM/IEEE International Conference on Cyber-Physical Systems (ICCPS)},
+  year={2025}
+}
+```
 
 ## Installation Instructions
 
